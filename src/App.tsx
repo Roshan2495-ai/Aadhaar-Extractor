@@ -91,13 +91,16 @@ export default function App() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setIsInstallable(false);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstallable(false);
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert("To install this app:\n\n1. On Android/Chrome: Tap the 3-dot menu (⋮) and select 'Install app' or 'Add to Home screen'.\n2. On iOS/Safari: Tap the Share icon and select 'Add to Home Screen'.\n\n(Note: The automatic install prompt only appears when opened in a new tab, not inside the preview window.)");
     }
-    setDeferredPrompt(null);
   };
 
   // Cleanup camera on unmount
@@ -301,16 +304,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-900 relative">
-      {isInstallable && (
-        <button
-          onClick={handleInstallClick}
-          className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all z-50"
-        >
-          <Download className="w-4 h-4" />
-          Install App
-        </button>
-      )}
-      <div className="max-w-5xl mx-auto space-y-8">
+      <button
+        onClick={handleInstallClick}
+        className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all z-50"
+      >
+        <Download className="w-4 h-4" />
+        Install App
+      </button>
+      <div className="max-w-5xl mx-auto space-y-8 pt-12 md:pt-0">
         <header className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Aadhaar Data Extractor</h1>
           <p className="text-gray-500">Extract details from Aadhaar cards and sync directly to Google Sheets.</p>
