@@ -232,7 +232,7 @@ export default function App() {
       const base64Data = await fileToBase64(file);
       const mimeType = file.type;
       
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
       
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-pro-preview',
