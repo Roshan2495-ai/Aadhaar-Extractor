@@ -5,7 +5,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { Upload, FileImage, Loader2, AlertCircle, X, Database, CheckCircle2, Camera, ImagePlus } from 'lucide-react';
+import { Upload, FileImage, Loader2, AlertCircle, X, Database, CheckCircle2, Camera, ImagePlus, Download } from 'lucide-react';
 
 const SYSTEM_PROMPT = `You are an Aadhaar card data extraction assistant.
 
@@ -71,6 +71,34 @@ export default function App() {
   const [saveError, setSaveError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // PWA Install State
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsInstallable(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   // Cleanup camera on unmount
   useEffect(() => {
@@ -272,7 +300,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-900">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-900 relative">
+      {isInstallable && (
+        <button
+          onClick={handleInstallClick}
+          className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all z-50"
+        >
+          <Download className="w-4 h-4" />
+          Install App
+        </button>
+      )}
       <div className="max-w-5xl mx-auto space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Aadhaar Data Extractor</h1>
