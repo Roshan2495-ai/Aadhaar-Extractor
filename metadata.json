@@ -1,0 +1,5 @@
+{
+  "name": "Aadhaar Extractor",
+  "description": "Extracts data from Aadhaar card images using Gemini AI.",
+  "requestFramePermissions": ["camera"]
+}
