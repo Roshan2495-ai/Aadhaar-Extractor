@@ -232,7 +232,8 @@ export default function App() {
       const base64Data = await fileToBase64(file);
       const mimeType = file.type;
       
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
+      const apiKey = process.env.CUSTOM_GEMINI_KEY || process.env.GEMINI_API_KEY;
+      const ai = new GoogleGenAI({ apiKey });
       
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-pro-preview',
@@ -267,7 +268,7 @@ export default function App() {
   };
 
   const handleSaveToSheets = async () => {
-    const scriptUrl = process.env.Google_Sheet;
+    const scriptUrl = process.env.Google_Sheet || import.meta.env.VITE_GOOGLE_SHEE || import.meta.env.VITE_GOOGLE_SHEET;
     if (!result) return;
     if (!scriptUrl) {
       setSaveError("Google_Sheet secret is not configured in AI Studio.");
